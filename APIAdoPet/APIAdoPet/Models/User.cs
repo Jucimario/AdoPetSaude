@@ -6,8 +6,9 @@ namespace APIAdoPet.Models;
 [Table("users")]
 public class User
 {
-    //[Key]
-    public int UserId { get; set; }
+    [Key]
+    [Required]
+    public int Id { get; set; }
 
     [Required]
     [StringLength(80)]

@@ -1,4 +1,5 @@
-﻿using APIAdoPet.Models;
+﻿using APIAdoPet.Context;
+using APIAdoPet.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace APIAdoPet.Controllers;
 
@@ -6,27 +7,31 @@ namespace APIAdoPet.Controllers;
 [Route("[controller]")]
 public class UserController : Controller
 {
-    public static List<User> usuarios = new();
-    public int MyProperty { get; set; }
+    private AppDbContext _context;
+    public UserController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     [HttpPost]
     public IActionResult AddUser([FromBody] User user)
     {
-        user.UserId = usuarios.Count() + 1;
-        usuarios.Add(user);
-        return CreatedAtAction(nameof(GetUsersPorId), new { id = user.UserId }, user);
+
+        _context.Users.Add(user);
+        _context.SaveChanges();
+        return CreatedAtAction(nameof(GetUsersPorId), new { id = user.Id }, user);
     }
 
     [HttpGet]
-    public List<User> GetUsers([FromQuery] int skip = 0, [FromQuery] int take = 50)
+    public IEnumerable<User> GetUsers([FromQuery] int skip = 0, [FromQuery] int take = 50)
     {
-        return (List<User>)usuarios.Skip(skip).Take(take);
+        return (List<User>)_context.Users.Skip(skip).Take(take);
     }
 
     [HttpGet("{id}")]
     public IActionResult GetUsersPorId(int id)
     {
-        var usuario = usuarios.FirstOrDefault(x => x.UserId == id);
+        var usuario = _context.Users.FirstOrDefault(x => x.Id == id);
         if (usuario == null)
             return NotFound();
 
