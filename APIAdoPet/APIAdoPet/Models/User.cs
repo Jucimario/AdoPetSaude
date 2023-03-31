@@ -35,7 +35,7 @@ public class User
     
     public bool Habilitado { get; set; }
 
-    public string? Descrição { get; set; }
+    public string? Descricao { get; set; }
 
     public DateTime DataCriacao { get; set; }
 

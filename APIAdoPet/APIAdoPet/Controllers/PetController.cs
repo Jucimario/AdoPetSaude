@@ -1,5 +1,5 @@
 ﻿using APIAdoPet.Context;
-using APIAdoPet.Dtos;
+using APIAdoPet.Dtos.PetDtos;
 using APIAdoPet.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -65,21 +65,20 @@ public class PetController : Controller
         return CreatedAtAction(nameof(GetPetsId), new { id = pet.Id }, pet);
     }
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Pet pet)
+    public ActionResult Put(int id, [FromBody]UpdatePetDto petDto)
     {
         try
         {
             var petSelecionado = _context.Pets.FirstOrDefault(p => p.Id == id);
 
-            if (id != petSelecionado.Id)
-            {
-                return BadRequest("Dados inválidos");
-            }
+            if (petSelecionado == null)            
+                return NotFound();
 
-            _context.Entry(pet).State = EntityState.Modified;
+            _mapper.Map(petDto, petSelecionado);
+            
             _context.SaveChanges();
 
-            return Ok(pet);
+            return NoContent();
         }
         catch (Exception)
         {

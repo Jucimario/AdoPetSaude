@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APIAdoPet.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace APIAdoPet.Dtos;
+namespace APIAdoPet.Dtos.PetDtos;
 
 public class CreatePetDto
 {
+    [Key]
+    [Required]
+    public int Id { get; set; }
 
     [Required]
     [StringLength(80)]
@@ -17,7 +21,7 @@ public class CreatePetDto
     [StringLength(80)]
     public string? Raca { get; set; }
 
-    [Required]    
+    [Required]
     public bool Sexo { get; set; }
 
     [Required]
@@ -38,4 +42,5 @@ public class CreatePetDto
     public string? Estado { get; set; }
 
     public string? Status { get; set; }
+        
 }
