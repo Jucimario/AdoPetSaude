@@ -1,25 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.VisualBasic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace APIAdoPet.Models;
 
-[Table("users")]
 public class User
 {
+    public User()
+    {
+        Pets = new Collection<Pet>();        
+    }
+
     [Key]
     [Required]
     public int Id { get; set; }
 
     [Required]
-    [StringLength(80)]
+    [MaxLength(80)]
     public string? Nome { get; set; }
 
     [Required]
-    [StringLength(80)]
+    [MaxLength(80)]
     public string? Email { get; set; }
 
     [Required]
-    [StringLength(80)]
+    [MaxLength(80)]
     public string? Password { get; set; }
 
     [Required]    
@@ -32,4 +38,6 @@ public class User
     public string? Descrição { get; set; }
 
     public DateTime DataCriacao { get; set; }
+
+    public ICollection<Pet>? Pets { get; set; }
 }
