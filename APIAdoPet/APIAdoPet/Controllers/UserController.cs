@@ -24,7 +24,10 @@ public class UserController : Controller
     {
         try
         {
-            var usuarios = _context.Users.Skip(skip).Take(take).ToList();
+            var usuarios = _context.Users.AsNoTracking().Include(p => p.Pets).Skip(skip).Take(take).ToList();
+            if (usuarios == null)            
+                return NotFound();
+
             var users = _mapper.Map<List<UserDto>>(usuarios);
 
             return Ok(users);
@@ -42,10 +45,10 @@ public class UserController : Controller
         try
         {
             var usuario = _context.Users.AsNoTracking().Include(p => p.Pets).FirstOrDefault(x => x.Id == id);
-
-            var user = _mapper.Map<UserDto>(usuario);
             if (usuario == null)
                 return NotFound();
+
+            var user = _mapper.Map<UserDto>(usuario);
 
             return Ok(user);
         }
@@ -84,8 +87,9 @@ public class UserController : Controller
             {
                 return NotFound();
             }
-            var sabendo = _mapper.Map(userDto, user);
-            _context.Entry(sabendo).State = EntityState.Modified;
+            var userMap = _mapper.Map(userDto, user);
+
+            _context.Entry(userMap).State = EntityState.Modified;
             _context.SaveChanges();
             return NoContent();
         }

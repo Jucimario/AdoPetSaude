@@ -1,6 +1,4 @@
-﻿using APIAdoPet.Dtos.PetDtos;
-using APIAdoPet.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace APIAdoPet.Dtos.UserDtos;
 

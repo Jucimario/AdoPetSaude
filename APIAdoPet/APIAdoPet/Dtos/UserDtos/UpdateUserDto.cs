@@ -27,5 +27,6 @@ namespace APIAdoPet.Dtos.UserDtos
         public string? Descricao { get; set; }
 
         public DateTime DataCriacao { get; set; }
+
     }
 }
