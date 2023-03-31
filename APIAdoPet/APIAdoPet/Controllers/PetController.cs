@@ -1,5 +1,6 @@
 ﻿using APIAdoPet.Context;
 using APIAdoPet.Dtos.PetDtos;
+using APIAdoPet.Dtos.UserDtos;
 using APIAdoPet.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -26,11 +27,35 @@ public class PetController : Controller
     {
         try
         {
+            var pets = _context.Pets.AsNoTracking().Include(u => u.User).Skip(skip).Take(take).ToList();
 
-            var pets = _context.Pets.AsNoTracking().Skip(skip).Take(take).ToList();
-            return pets;
+            if (pets == null)
+                return NotFound();
 
-            //return (List<Pet>)_context.Pets.AsNoTracking().Include(p => p.User).Skip(skip).Take(take).ToList();
+            var petList = _mapper.Map<List<PetDto>>(pets);
+
+            return Ok(petList);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                     "Ocorreu um problema ao tratar a sua solicitação.");
+        }
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult GetPetsId(int id)
+    {
+        try
+        {
+            var pet = _context.Pets.AsNoTracking().Include(u => u.User).FirstOrDefault(x => x.Id == id);
+
+            if (pet == null)
+                return NotFound($"Pet não encontrado...");
+
+            var petDto = _mapper.Map<PetDto>(pet);
+
+            return Ok(petDto);
         }
         catch (Exception)
         {
@@ -38,17 +63,6 @@ public class PetController : Controller
                      "Ocorreu um problema ao tratar a sua solicitação.");
         }
 
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult GetPetsId(int id)
-    {
-        var pet = _context.Pets.FirstOrDefault(x => x.Id == id);
-
-        if (pet == null)
-            return NotFound($"Pet não encontrado...");
-
-        return Ok(pet);
     }
 
 
@@ -60,22 +74,24 @@ public class PetController : Controller
             return BadRequest("Dados inválidos");
 
         Pet pet = _mapper.Map<Pet>(petDto);
+
         _context.Pets.Add(pet);
         _context.SaveChanges();
         return CreatedAtAction(nameof(GetPetsId), new { id = pet.Id }, pet);
     }
+
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, [FromBody]UpdatePetDto petDto)
+    public ActionResult Put(int id, [FromBody] UpdatePetDto petDto)
     {
         try
         {
             var petSelecionado = _context.Pets.FirstOrDefault(p => p.Id == id);
 
-            if (petSelecionado == null)            
+            if (petSelecionado == null)
                 return NotFound();
 
-            _mapper.Map(petDto, petSelecionado);
-            
+            var petMaper = _mapper.Map(petDto, petSelecionado);
+            _context.Entry(petMaper).State = EntityState.Modified;
             _context.SaveChanges();
 
             return NoContent();
@@ -93,14 +109,13 @@ public class PetController : Controller
         try
         {
             var pet = _context.Pets.FirstOrDefault(p => p.Id == id);
-
-            if (pet == null)
-            {
+            
+            if (pet == null)            
                 return NotFound($"Pet não encontrado...");
-            }
+
             _context.Pets.Remove(pet);
             _context.SaveChanges();
-            return Ok(pet);
+            return NoContent();
         }
         catch (Exception)
         {

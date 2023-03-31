@@ -1,18 +1,13 @@
-﻿using APIAdoPet.Dtos.PetDtos;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace APIAdoPet.Dtos.UserDtos
 {
-    public class UserDto
+    public class ReadUserDto
     {
-        public UserDto()
-        {
-            Pets = new List<ReadPetDto>();
-        }
-
         [Key]
         [Required]
         public int Id { get; set; }
+
         [Required]
         [StringLength(80)]
         public string? Nome { get; set; }
@@ -32,6 +27,5 @@ namespace APIAdoPet.Dtos.UserDtos
 
         public DateTime DataCriacao { get; set; }
 
-        public ICollection<ReadPetDto>? Pets { get; set; }
     }
 }

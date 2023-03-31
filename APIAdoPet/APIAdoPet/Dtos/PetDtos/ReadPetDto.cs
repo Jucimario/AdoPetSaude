@@ -1,11 +1,9 @@
-﻿using APIAdoPet.Dtos.UserDtos;
-using APIAdoPet.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace APIAdoPet.Dtos.PetDtos
 {
-    public class PetDto
-    {       
+    public class ReadPetDto 
+    {
         [Key]
         [Required]
         public int Id { get; set; }
@@ -42,7 +40,5 @@ namespace APIAdoPet.Dtos.PetDtos
         public string? Estado { get; set; }
 
         public string? Status { get; set; }
-
-        public ReadUserDto? User { get; set; }
     }
 }

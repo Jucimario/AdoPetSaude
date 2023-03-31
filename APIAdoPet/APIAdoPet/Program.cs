@@ -42,6 +42,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 //Inicio - Configuracao AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 // - Configuracao AutoMapper
 
 #endregion

@@ -38,5 +38,6 @@ public class UpdatePetDto
     public string? Estado { get; set; }
 
     public string? Status { get; set; }
+
     public int? UserId { get; set; }
 }
