@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIAdoPet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230330213637_criarTabelas")]
-    partial class criarTabelas
+    [Migration("20230331183826_criandoTabelas")]
+    partial class criandoTabelas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,7 +72,7 @@ namespace APIAdoPet.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -91,7 +91,7 @@ namespace APIAdoPet.Migrations
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Descrição")
+                    b.Property<string>("Descricao")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
@@ -128,9 +128,7 @@ namespace APIAdoPet.Migrations
                 {
                     b.HasOne("APIAdoPet.Models.User", "User")
                         .WithMany("Pets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

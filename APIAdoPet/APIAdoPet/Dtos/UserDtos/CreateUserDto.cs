@@ -1,9 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APIAdoPet.Dtos.PetDtos;
+using APIAdoPet.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace APIAdoPet.Dtos;
+namespace APIAdoPet.Dtos.UserDtos;
 
-public class CreateUseDto
+public class CreateUserDto
 {
+    [Key]
+    [Required]
+    public int Id { get; set; }
+
     [Required]
     [StringLength(80)]
     public string? Nome { get; set; }
@@ -23,7 +29,8 @@ public class CreateUseDto
 
     public bool Habilitado { get; set; }
 
-    public string? Descrição { get; set; }
+    public string? Descricao { get; set; }
 
     public DateTime DataCriacao { get; set; }
+
 }

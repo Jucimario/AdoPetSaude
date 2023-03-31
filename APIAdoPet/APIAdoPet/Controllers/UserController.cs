@@ -1,5 +1,5 @@
 ﻿using APIAdoPet.Context;
-using APIAdoPet.Dtos;
+using APIAdoPet.Dtos.UserDtos;
 using APIAdoPet.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -19,46 +19,75 @@ public class UserController : Controller
         _mapper = mapper;
     }
 
-
     [HttpGet]
     public ActionResult<IEnumerable<User>> GetUsers([FromQuery] int skip = 0, [FromQuery] int take = 50)
     {
-        return (List<User>)_context.Users.Skip(skip).Take(take).ToList();
+        try
+        {
+            var usuarios = _context.Users.Skip(skip).Take(take).ToList();
+            var users = _mapper.Map<List<UserDto>>(usuarios);
+
+            return Ok(users);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                                       "Ocorreu um problema ao tratar a sua solicitação.");
+        }
     }
 
     [HttpGet("{id}")]
     public ActionResult GetUsersPorId(int id)
     {
-        var usuario = _context.Users.FirstOrDefault(x => x.Id == id);
-        if (usuario == null)
-            return NotFound();
+        try
+        {
+            var usuario = _context.Users.AsNoTracking().Include(p => p.Pets).FirstOrDefault(x => x.Id == id);
 
-        return Ok(usuario);
+            var user = _mapper.Map<UserDto>(usuario);
+            if (usuario == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                                       "Ocorreu um problema ao tratar a sua solicitação.");
+        }
+
     }
-
 
     [HttpPost]
-    public ActionResult AddUser([FromBody] CreateUseDto userDto)
-    {
-
-        User user = _mapper.Map<User>(userDto);
-        _context.Users.Add(user);
-        _context.SaveChanges();
-        return CreatedAtAction(nameof(GetUsersPorId), new { id = user.Id }, user);
-    }
-
-    [HttpPut("{id:int}")]
-    public ActionResult Put(int id, User user)
+    public ActionResult AddUser([FromBody] CreateUserDto userDto)
     {
         try
         {
-            if (id != user.Id)
-            {
-                return BadRequest("Dados inválidos");
-            }
-            _context.Entry(user).State = EntityState.Modified;
+            User user = _mapper.Map<User>(userDto);
+            _context.Users.Add(user);
             _context.SaveChanges();
-            return Ok(user);
+            return CreatedAtAction(nameof(GetUsersPorId), new { id = user.Id }, user);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                            "Ocorreu um problema ao tratar a sua solicitação.");
+        }
+    }
+
+    [HttpPut("{id:int}")]
+    public ActionResult Put(int id, [FromBody] UpdateUserDto userDto)
+    {
+        try
+        {
+            var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var sabendo = _mapper.Map(userDto, user);
+            _context.Entry(sabendo).State = EntityState.Modified;
+            _context.SaveChanges();
+            return NoContent();
         }
         catch (Exception)
         {
@@ -66,7 +95,6 @@ public class UserController : Controller
                    "Ocorreu um problema ao tratar a sua solicitação.");
         }
     }
-
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
@@ -81,7 +109,8 @@ public class UserController : Controller
             }
             _context.Users.Remove(user);
             _context.SaveChanges();
-            return Ok(user);
+
+            return NoContent();
         }
         catch (Exception)
         {
